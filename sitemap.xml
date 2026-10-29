@@ -9,4 +9,7 @@
   <url><loc>content/cron-every-30-minutes.html</loc><lastmod>2026-10-30</lastmod><priority>0.8</priority></url>
   <url><loc>content/cron-reboot.html</loc><lastmod>2026-10-30</lastmod><priority>0.8</priority></url>
   <url><loc>content/cron-first-day-of-month.html</loc><lastmod>2026-10-30</lastmod><priority>0.8</priority></url>
+  <url><loc>content/cron-every-6-hours.html</loc><lastmod>2026-10-30</lastmod><priority>0.8</priority></url>
+  <url><loc>content/cron-percent-escaping.html</loc><lastmod>2026-10-30</lastmod><priority>0.8</priority></url>
+  <url><loc>content/cron-timezone.html</loc><lastmod>2026-10-30</lastmod><priority>0.8</priority></url>
 </urlset>

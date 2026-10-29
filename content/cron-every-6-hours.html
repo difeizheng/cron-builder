@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cron Every 6 Hours — 0 */6 * * * Explained with Offsets</title>
+<meta name="description" content="Cron every 6 hours: 0 */6 * * *. See why the start point matters, how to offset (3-59/6), and the 4-runs-a-day math.">
+<link rel="canonical" href="./cron-every-6-hours.html">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What is the cron expression for every 6 hours?", "acceptedAnswer": {"@type": "Answer", "text": "0 */6 * * * fires at 00:00, 06:00, 12:00 and 18:00 — four runs per day at minute 0."}}, {"@type": "Question", "name": "How do I make a 6-hour cron start at 3 AM instead of midnight?", "acceptedAnswer": {"@type": "Answer", "text": "Use a range with a step: 0 3-59/6 * * * fires at 03:00, 09:00, 15:00, 21:00. */6 always starts counting from the field minimum."}}]}</script>
+<style>:root{--bg:#0d1117;--panel:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--accent:#3fb950;--accent2:#58a6ff;--danger:#f85149}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans",sans-serif;line-height:1.7;padding:24px;max-width:820px;margin:0 auto}
+h1{font-size:1.6rem;margin-bottom:6px}h2{font-size:1.15rem;margin:26px 0 8px}
+.sub{color:var(--muted);margin-bottom:22px}
+.expr{background:#161b22;border:1px solid var(--border);border-radius:10px;padding:16px 20px;font-family:ui-monospace,Consolas,monospace;font-size:1.5rem;color:var(--accent);letter-spacing:.06em;margin:14px 0}
+table{width:100%;border-collapse:collapse;font-size:.93rem;margin:12px 0}
+th,td{padding:8px 10px;border:1px solid var(--border);text-align:left}
+th{background:#161b22;color:var(--muted);font-weight:500}
+td code{background:#0d1117}
+code{background:#21262d;border-radius:4px;padding:2px 7px;font-family:ui-monospace,Consolas,monospace;font-size:.9em}
+p{margin:12px 0;color:var(--muted)}
+.note{background:#161b22;border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:10px 14px;margin:14px 0}
+.warn{border-color:var(--danger)}
+a{color:var(--accent2);text-decoration:none}
+.btn{display:inline-block;background:var(--accent);color:#0d1117;border-radius:8px;padding:10px 22px;font-weight:600;margin:10px 0}
+footer{color:var(--muted);font-size:.85rem;margin-top:30px;border-top:1px solid var(--border);padding-top:16px}</style>
+</head>
+<body>
+<p style="margin-bottom:14px"><a href="../index.html">← Cron Builder &amp; Explainer</a></p>
+<h1>Cron: Run a Job Every 6 Hours</h1>
+<p class="sub">Cron every 6 hours: 0 */6 * * *. See why the start point matters, how to offset (3-59/6), and the 4-runs-a-day math.</p>
+
+<div class="expr">0 */6 * * *</div>
+<p>Hour field <code>*/6</code> fires at hours 0, 6, 12, 18 — four runs a day, at minute 0.</p>
+
+<h2>The offset most people get wrong</h2>
+<p><code>*/6</code> counts <strong>from 0</strong>, so writing <code>30 */6 * * *</code> still fires at 00:30, 06:30, 12:30, 18:30 — you cannot shift the hour set with a minute value. To start at 03:00 instead:</p>
+<table>
+<tr><th>Goal</th><th>Expression</th><th>Fires at</th></tr>
+<tr><td>Every 6 h from midnight</td><td><code>0 */6 * * *</code></td><td>00:00, 06:00, 12:00, 18:00</td></tr>
+<tr><td>Every 6 h offset to 03:00</td><td><code>0 3-59/6 * * *</code></td><td>03:00, 09:00, 15:00, 21:00</td></tr>
+<tr><td>Every 6 h at :30 past</td><td><code>30 3-59/6 * * *</code></td><td>03:30, 09:30, 15:30, 21:30</td></tr>
+<tr><td>Four fixed times</td><td><code>0 0,6,12,18 * * *</code></td><td>Explicit list, clearest to read</td></tr>
+</table>
+
+<h2>Gotchas</h2>
+<p><strong>Range + step is the offset syntax:</strong> <code>3-59/6</code> means "start at 3, step 6". <code>*/6</code> always starts at the field minimum.</p>
+<p><strong>Server timezone again:</strong> a "6-hour heartbeat" is timezone-independent, but <em>which</em> four clock hours it lands on is not — verify with the next-run preview.</p>
+<div class="note"><a href="../index.html">Cron Builder</a> previews the next 5 runs so offset math is visible, not mental.</div>
+
+<footer>Cron Builder · free, client-side, no signup · <a href="../index.html">Build your own schedule →</a></footer>
+</body>
+</html>
