@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cron Every 15 Minutes — */15 * * * * with Offset Variants</title>
+<meta name="description" content="Cron every 15 minutes: */15 * * * *. Offsets (7-59/15), business-hours windows, and why 15-minute jobs need run-duration guards.">
+<link rel="canonical" href="./cron-every-15-minutes.html">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What is the cron expression for every 15 minutes?", "acceptedAnswer": {"@type": "Answer", "text": "*/15 * * * * — fires at :00, :15, :30 and :45 of every hour, 96 times per day."}}, {"@type": "Question", "name": "How do I offset a 15-minute cron away from exact quarters?", "acceptedAnswer": {"@type": "Answer", "text": "7-59/15 * * * * fires at :07, :22, :37, :52 — the range start sets the offset."}}]}</script>
+<style>:root{--bg:#0d1117;--panel:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--accent:#3fb950;--accent2:#58a6ff;--danger:#f85149}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans",sans-serif;line-height:1.7;padding:24px;max-width:820px;margin:0 auto}
+h1{font-size:1.6rem;margin-bottom:6px}h2{font-size:1.15rem;margin:26px 0 8px}
+.sub{color:var(--muted);margin-bottom:22px}
+.expr{background:#161b22;border:1px solid var(--border);border-radius:10px;padding:16px 20px;font-family:ui-monospace,Consolas,monospace;font-size:1.5rem;color:var(--accent);letter-spacing:.06em;margin:14px 0}
+table{width:100%;border-collapse:collapse;font-size:.93rem;margin:12px 0}
+th,td{padding:8px 10px;border:1px solid var(--border);text-align:left}
+th{background:#161b22;color:var(--muted);font-weight:500}
+td code{background:#0d1117}
+code{background:#21262d;border-radius:4px;padding:2px 7px;font-family:ui-monospace,Consolas,monospace;font-size:.9em}
+p{margin:12px 0;color:var(--muted)}
+.note{background:#161b22;border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:10px 14px;margin:14px 0}
+.warn{border-color:var(--danger)}
+a{color:var(--accent2);text-decoration:none}
+.btn{display:inline-block;background:var(--accent);color:#0d1117;border-radius:8px;padding:10px 22px;font-weight:600;margin:10px 0}
+footer{color:var(--muted);font-size:.85rem;margin-top:30px;border-top:1px solid var(--border);padding-top:16px}</style>
+</head>
+<body>
+<p style="margin-bottom:14px"><a href="../index.html">← Cron Builder &amp; Explainer</a></p>
+<h1>Cron: Run a Job Every 15 Minutes</h1>
+<p class="sub">Cron every 15 minutes: */15 * * * *. Offsets (7-59/15), business-hours windows, and why 15-minute jobs need run-duration guards.</p>
+
+<div class="expr">*/15 * * * *</div>
+<p>Fires at :00, :15, :30, :45 of every hour — 96 runs per day.</p>
+
+<h2>Variants</h2>
+<table>
+<tr><th>Goal</th><th>Expression</th><th>Notes</th></tr>
+<tr><td>Every 15 min, offset 7 (:07/:22/:37/:52)</td><td><code>7-59/15 * * * *</code></td><td>Dodge the :00 stampede</td></tr>
+<tr><td>Every 15 min, 08:00–20:00 only</td><td><code>*/15 8-20 * * *</code></td><td>Daytime window</td></tr>
+<tr><td>Every 15 min, weekdays</td><td><code>*/15 * * * 1-5</code></td><td>Mon–Fri</td></tr>
+<tr><td>Only at :15 and :45</td><td><code>15,45 * * * *</code></td><td>Explicit list</td></tr>
+</table>
+
+<h2>At 96 runs a day, watch two things</h2>
+<p><strong>Runtime overlap:</strong> any job slower than 15 minutes stacks onto itself — add a lockfile or skip-if-running guard. <strong>Log growth:</strong> 96 lines a day is 35k lines a year; logrotate or truncate inside the job.</p>
+<div class="note">Preview the exact fire times in the <a href="../index.html">Cron Builder</a> before committing the line.</div>
+
+<footer>Cron Builder · free, client-side, no signup · <a href="../index.html">Build your own schedule →</a></footer>
+</body>
+</html>
