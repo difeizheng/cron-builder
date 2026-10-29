@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cron Weekdays Only (Mon–Fri) — Expression & Weekend Exclusions</title>
+<meta name="description" content="Cron weekdays only: 0 9 * * 1-5. How the weekday field works, why 0 and 7 are both Sunday, and how to skip holidays.">
+<link rel="canonical" href="./cron-weekdays-only.html">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What is the cron expression for weekdays only?", "acceptedAnswer": {"@type": "Answer", "text": "Add 1-5 to the day-of-week field, e.g. 0 9 * * 1-5 runs at 09:00 every Monday through Friday."}}, {"@type": "Question", "name": "Is 0 or 7 Sunday in cron?", "acceptedAnswer": {"@type": "Answer", "text": "Both — 0 and 7 both mean Sunday on most implementations. 1 is Monday, 6 is Saturday."}}]}</script>
+<style>:root{--bg:#0d1117;--panel:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--accent:#3fb950;--accent2:#58a6ff;--danger:#f85149}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans",sans-serif;line-height:1.7;padding:24px;max-width:820px;margin:0 auto}
+h1{font-size:1.6rem;margin-bottom:6px}h2{font-size:1.15rem;margin:26px 0 8px}
+.sub{color:var(--muted);margin-bottom:22px}
+.expr{background:#161b22;border:1px solid var(--border);border-radius:10px;padding:16px 20px;font-family:ui-monospace,Consolas,monospace;font-size:1.5rem;color:var(--accent);letter-spacing:.06em;margin:14px 0}
+table{width:100%;border-collapse:collapse;font-size:.93rem;margin:12px 0}
+th,td{padding:8px 10px;border:1px solid var(--border);text-align:left}
+th{background:#161b22;color:var(--muted);font-weight:500}
+td code{background:#0d1117}
+code{background:#21262d;border-radius:4px;padding:2px 7px;font-family:ui-monospace,Consolas,monospace;font-size:.9em}
+p{margin:12px 0;color:var(--muted)}
+.note{background:#161b22;border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:10px 14px;margin:14px 0}
+.warn{border-color:var(--danger)}
+a{color:var(--accent2);text-decoration:none}
+.btn{display:inline-block;background:var(--accent);color:#0d1117;border-radius:8px;padding:10px 22px;font-weight:600;margin:10px 0}
+footer{color:var(--muted);font-size:.85rem;margin-top:30px;border-top:1px solid var(--border);padding-top:16px}</style>
+</head>
+<body>
+<p style="margin-bottom:14px"><a href="../index.html">← Cron Builder &amp; Explainer</a></p>
+<h1>Cron: Run a Job on Weekdays Only</h1>
+<p class="sub">Cron weekdays only: 0 9 * * 1-5. How the weekday field works, why 0 and 7 are both Sunday, and how to skip holidays.</p>
+
+<div class="expr">0 9 * * 1-5</div>
+<p>The fifth field is <strong>day of week</strong>: <code>1-5</code> means Monday through Friday. This example fires at 09:00 on working days.</p>
+
+<h2>Weekday field reference</h2>
+<table>
+<tr><th>Value</th><th>Day</th></tr>
+<tr><td>0 or 7</td><td>Sunday (both work — a classic surprise)</td></tr>
+<tr><td>1–5</td><td>Monday to Friday</td></tr>
+<tr><td>5,6</td><td>Saturday and Sunday (careful: 5=Fri, 6=Sat)</td></tr>
+<tr><td>MON-FRI</td><td>Names work on most modern crons</td></tr>
+</table>
+
+<h2>Variants</h2>
+<table>
+<tr><th>Goal</th><th>Expression</th></tr>
+<tr><td>Weekdays at 09:00</td><td><code>0 9 * * 1-5</code></td></tr>
+<tr><td>Weekdays every 30 min</td><td><code>*/30 * * * 1-5</code></td></tr>
+<tr><td>Monday and Thursday only</td><td><code>0 9 * * 1,4</code></td></tr>
+<tr><td>First Monday of the month</td><td>not possible in standard cron — needs <code>[ $(date +\%u) -eq 1 ] && your_job</code> style guard</td></tr>
+</table>
+
+<h2>Holidays</h2>
+<p>Cron has no concept of holidays. Standard practice: run the weekday job and have the job itself exit early if today is in a holiday list file.</p>
+<div class="note"><a href="../index.html">Cron Builder</a> highlights weekday picks in the field dropdown so you can't miscount.</div>
+
+<footer>Cron Builder · free, client-side, no signup · <a href="../index.html">Build your own schedule →</a></footer>
+</body>
+</html>
