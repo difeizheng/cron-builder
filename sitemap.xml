@@ -12,4 +12,6 @@
   <url><loc>content/cron-every-6-hours.html</loc><lastmod>2026-10-30</lastmod><priority>0.8</priority></url>
   <url><loc>content/cron-percent-escaping.html</loc><lastmod>2026-10-30</lastmod><priority>0.8</priority></url>
   <url><loc>content/cron-timezone.html</loc><lastmod>2026-10-30</lastmod><priority>0.8</priority></url>
+  <url><loc>content/cron-every-12-hours.html</loc><lastmod>2026-10-30</lastmod><priority>0.8</priority></url>
+  <url><loc>content/crontab-not-running.html</loc><lastmod>2026-10-30</lastmod><priority>0.8</priority></url>
 </urlset>

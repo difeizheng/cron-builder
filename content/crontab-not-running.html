@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crontab Not Running? The 8-Step Debug Checklist</title>
+<meta name="description" content="Your cron job isn't firing. Work through the 8 real causes: service down, wrong crontab, PATH, % escaping, permissions, logs — with commands.">
+<link rel="canonical" href="./crontab-not-running.html">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Why is my crontab job not running?", "acceptedAnswer": {"@type": "Answer", "text": "Top causes: cron daemon stopped, editing the wrong crontab, minimal PATH breaking the command, or the % escape rule. Check /var/mail/$USER for cron's error emails."}}, {"@type": "Question", "name": "How do I see cron job errors?", "acceptedAnswer": {"@type": "Answer", "text": "Check /var/mail/$USER (cron emails output), or append >> /tmp/job.log 2>&1 to the crontab line to capture output to a file."}}]}</script>
+<style>:root{--bg:#0d1117;--panel:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--accent:#3fb950;--accent2:#58a6ff;--danger:#f85149}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans",sans-serif;line-height:1.7;padding:24px;max-width:820px;margin:0 auto}
+h1{font-size:1.6rem;margin-bottom:6px}h2{font-size:1.15rem;margin:26px 0 8px}
+.sub{color:var(--muted);margin-bottom:22px}
+.expr{background:#161b22;border:1px solid var(--border);border-radius:10px;padding:16px 20px;font-family:ui-monospace,Consolas,monospace;font-size:1.5rem;color:var(--accent);letter-spacing:.06em;margin:14px 0}
+table{width:100%;border-collapse:collapse;font-size:.93rem;margin:12px 0}
+th,td{padding:8px 10px;border:1px solid var(--border);text-align:left}
+th{background:#161b22;color:var(--muted);font-weight:500}
+td code{background:#0d1117}
+code{background:#21262d;border-radius:4px;padding:2px 7px;font-family:ui-monospace,Consolas,monospace;font-size:.9em}
+p{margin:12px 0;color:var(--muted)}
+.note{background:#161b22;border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:10px 14px;margin:14px 0}
+.warn{border-color:var(--danger)}
+a{color:var(--accent2);text-decoration:none}
+.btn{display:inline-block;background:var(--accent);color:#0d1117;border-radius:8px;padding:10px 22px;font-weight:600;margin:10px 0}
+footer{color:var(--muted);font-size:.85rem;margin-top:30px;border-top:1px solid var(--border);padding-top:16px}</style>
+</head>
+<body>
+<p style="margin-bottom:14px"><a href="../index.html">← Cron Builder &amp; Explainer</a></p>
+<h1>Crontab Not Running: Debug It in 8 Steps</h1>
+<p class="sub">Your cron job isn't firing. Work through the 8 real causes: service down, wrong crontab, PATH, % escaping, permissions, logs — with commands.</p>
+
+<p>Work top-down; the first four steps catch 90% of cases.</p>
+
+<h2>1. Is the cron daemon even running?</h2>
+<p><code>systemctl status cron</code> (or crond). If dead: <code>sudo systemctl start cron</code>. This is embarrassingly common on containers and minimal installs.</p>
+
+<h2>2. Are you editing the right crontab?</h2>
+<p><code>crontab -l</code> shows the <em>current user's</em> jobs. Editing <code>/etc/crontab</code> or dropping files in <code>/etc/cron.d/</code> is a different world — those need a user field between the schedule and command.</p>
+
+<h2>3. Is the schedule what you think?</h2>
+<p>Five fields, minute first. Verify against the <a href="../index.html">Cron Builder</a> — the next-run preview catches field-order mistakes instantly.</p>
+
+<h2>4. The % escape</h2>
+<p>A bare <code>%</code> in the command becomes a newline; text after it goes to stdin. Escape as <code>\%</code>.</p>
+
+<h2>5. PATH is minimal</h2>
+<p>Cron runs with <code>/usr/bin:/bin</code> — your script calling <code>python3</code>, <code>node</code> or anything in a custom path fails silently. Use absolute paths, or set <code>PATH=</code> at the top of the crontab.</p>
+
+<h2>6. Where did the output go?</h2>
+<p>Cron emails stdout/stderr to the local mailbox: check <code>/var/mail/$USER</code>. Or log explicitly: append <code>&gt;&gt; /tmp/myjob.log 2&gt;&amp;1</code> to the line — from now on you can see every failure.</p>
+
+<h2>7. Permissions and newline</h2>
+<p>Script not executable? <code>chmod +x</code>. Crontab file missing a trailing newline? Some cron implementations silently drop the last line.</p>
+
+<h2>8. Timezone and "it ran at the wrong time"</h2>
+<p>The job IS running — at server time. <code>date</code> on the server, then compare.</p>
+
+<div class="note">Steps 5–7 produce no errors anywhere — they just quietly don't work. Logging (step 6) turns invisible failures into visible ones; do it first, not last.</div>
+
+<footer>Cron Builder · free, client-side, no signup · <a href="../index.html">Build your own schedule →</a></footer>
+</body>
+</html>
