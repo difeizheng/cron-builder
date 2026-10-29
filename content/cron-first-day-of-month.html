@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cron First Day of Month — and the True Last Day Trick</title>
+<meta name="description" content="Cron on the 1st of the month: 0 9 1 * *. Variants for quarter-end, and the reliable trick for the LAST day of the month (cron can't express it directly).">
+<link rel="canonical" href="./cron-first-day-of-month.html">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What is the cron expression for the first day of the month?", "acceptedAnswer": {"@type": "Answer", "text": "0 9 1 * * fires at 09:00 on the 1st of every month. Field 3 is day-of-month; keep field 5 (weekday) as *."}}, {"@type": "Question", "name": "How do I schedule a cron job on the last day of the month?", "acceptedAnswer": {"@type": "Answer", "text": "Cron cannot express it directly. Run on 28-31 (0 9 28-31 * *) and guard the command with [ \"$(date -d tomorrow +%d)\" = \"01\" ] so it only fires when tomorrow is the 1st."}}]}</script>
+<style>:root{--bg:#0d1117;--panel:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--accent:#3fb950;--accent2:#58a6ff;--danger:#f85149}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans",sans-serif;line-height:1.7;padding:24px;max-width:820px;margin:0 auto}
+h1{font-size:1.6rem;margin-bottom:6px}h2{font-size:1.15rem;margin:26px 0 8px}
+.sub{color:var(--muted);margin-bottom:22px}
+.expr{background:#161b22;border:1px solid var(--border);border-radius:10px;padding:16px 20px;font-family:ui-monospace,Consolas,monospace;font-size:1.5rem;color:var(--accent);letter-spacing:.06em;margin:14px 0}
+table{width:100%;border-collapse:collapse;font-size:.93rem;margin:12px 0}
+th,td{padding:8px 10px;border:1px solid var(--border);text-align:left}
+th{background:#161b22;color:var(--muted);font-weight:500}
+td code{background:#0d1117}
+code{background:#21262d;border-radius:4px;padding:2px 7px;font-family:ui-monospace,Consolas,monospace;font-size:.9em}
+p{margin:12px 0;color:var(--muted)}
+.note{background:#161b22;border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:10px 14px;margin:14px 0}
+.warn{border-color:var(--danger)}
+a{color:var(--accent2);text-decoration:none}
+.btn{display:inline-block;background:var(--accent);color:#0d1117;border-radius:8px;padding:10px 22px;font-weight:600;margin:10px 0}
+footer{color:var(--muted);font-size:.85rem;margin-top:30px;border-top:1px solid var(--border);padding-top:16px}</style>
+</head>
+<body>
+<p style="margin-bottom:14px"><a href="../index.html">← Cron Builder &amp; Explainer</a></p>
+<h1>Cron: Run a Job on the First Day of the Month</h1>
+<p class="sub">Cron on the 1st of the month: 0 9 1 * *. Variants for quarter-end, and the reliable trick for the LAST day of the month (cron can't express it directly).</p>
+
+<div class="expr">0 9 1 * *</div>
+<p>Minute 0, hour 9, day-of-month 1 — fires at 09:00 on the 1st of every month. The trick: put the day in field 3 and leave day-of-week as <code>*</code>; restrict both and standard cron ORs them instead.</p>
+
+<h2>Variants</h2>
+<table>
+<tr><th>Goal</th><th>Expression</th><th>Notes</th></tr>
+<tr><td>1st of month at midnight</td><td><code>0 0 1 * *</code></td></tr>
+<tr><td>Quarterly (Jan/Apr/Jul/Oct 1st)</td><td><code>0 9 1 1,4,7,10 *</code></td><td>Month list</td></tr>
+<tr><td>Yearly (Jan 1st)</td><td><code>0 9 1 1 *</code></td></tr>
+<tr><td>Twice on the 1st (00:00 &amp; 12:00)</td><td><code>0 0,12 1 * *</code></td></tr>
+</table>
+
+<h2>The last day of the month: cron can't say it directly</h2>
+<p>Months end on 28, 29, 30 or 31 — no single field value works. The reliable pattern runs on 28–31 and self-checks:</p>
+<p><code>0 9 28-31 * * [ "$(date -d tomorrow +\%d)" = "01" ] && /path/to/month_end_job.sh</code></p>
+<p>Run it at 09:00 on the 28th–31st; the inline test only lets it execute when tomorrow is the 1st. (Escape the <code>%</code> as <code>\%</code> — cron treats raw <code>%</code> as a newline.)</p>
+<div class="note"><a href="../index.html">Cron Builder</a> explains each field of your expression in plain language before you deploy it.</div>
+
+<footer>Cron Builder · free, client-side, no signup · <a href="../index.html">Build your own schedule →</a></footer>
+</body>
+</html>

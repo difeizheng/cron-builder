@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cron @reboot — Run a Job at Startup (with Traps)</title>
+<meta name="description" content="@reboot runs a command when cron starts. Syntax, why it may not fire after reboot, environment differences, and alternatives for systemd systems.">
+<link rel="canonical" href="./cron-reboot.html">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What is @reboot in crontab?", "acceptedAnswer": {"@type": "Answer", "text": "@reboot replaces the five time fields and runs the command once when the cron daemon starts, typically at system boot."}}, {"@type": "Question", "name": "Why doesn't my @reboot job run?", "acceptedAnswer": {"@type": "Answer", "text": "Common causes: cron daemon was not actually restarted, relative paths break from $HOME, or the network is not yet up. Use absolute paths and a sleep guard."}}]}</script>
+<style>:root{--bg:#0d1117;--panel:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--accent:#3fb950;--accent2:#58a6ff;--danger:#f85149}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans",sans-serif;line-height:1.7;padding:24px;max-width:820px;margin:0 auto}
+h1{font-size:1.6rem;margin-bottom:6px}h2{font-size:1.15rem;margin:26px 0 8px}
+.sub{color:var(--muted);margin-bottom:22px}
+.expr{background:#161b22;border:1px solid var(--border);border-radius:10px;padding:16px 20px;font-family:ui-monospace,Consolas,monospace;font-size:1.5rem;color:var(--accent);letter-spacing:.06em;margin:14px 0}
+table{width:100%;border-collapse:collapse;font-size:.93rem;margin:12px 0}
+th,td{padding:8px 10px;border:1px solid var(--border);text-align:left}
+th{background:#161b22;color:var(--muted);font-weight:500}
+td code{background:#0d1117}
+code{background:#21262d;border-radius:4px;padding:2px 7px;font-family:ui-monospace,Consolas,monospace;font-size:.9em}
+p{margin:12px 0;color:var(--muted)}
+.note{background:#161b22;border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:10px 14px;margin:14px 0}
+.warn{border-color:var(--danger)}
+a{color:var(--accent2);text-decoration:none}
+.btn{display:inline-block;background:var(--accent);color:#0d1117;border-radius:8px;padding:10px 22px;font-weight:600;margin:10px 0}
+footer{color:var(--muted);font-size:.85rem;margin-top:30px;border-top:1px solid var(--border);padding-top:16px}</style>
+</head>
+<body>
+<p style="margin-bottom:14px"><a href="../index.html">← Cron Builder &amp; Explainer</a></p>
+<h1>Cron: Run a Job at Reboot (@reboot)</h1>
+<p class="sub">@reboot runs a command when cron starts. Syntax, why it may not fire after reboot, environment differences, and alternatives for systemd systems.</p>
+
+<div class="expr">@reboot /path/to/your/script.sh</div>
+<p><code>@reboot</code> replaces all five time fields: the command runs once when cron daemon starts — typically at system boot.</p>
+
+<h2>Why your @reboot job silently doesn't run</h2>
+<table>
+<tr><th>Cause</th><th>Fix</th></tr>
+<tr><td>cron daemon wasn't restarted — it only fires when cron itself starts, not when you log in</td><td><code>sudo service cron restart</code> to test</td></tr>
+<tr><td>Relative paths break — @reboot runs from <code>$HOME</code> with a minimal PATH</td><td>Use absolute paths everywhere</td></tr>
+<tr><td>Network isn't up yet — the job races the network stack</td><td>Add <code>sleep 30 &&</code> before the command</td></tr>
+<tr><td>You edited user crontab but the job is in /etc/crontab — syntax differs (user field required)</td><td>Check which crontab you edited: <code>crontab -l</code></td></tr>
+</table>
+
+<h2>Alternatives on modern systems</h2>
+<p>On systemd distributions, a <strong>unit with <code>Type=oneshot</code> + <code>WantedBy=multi-user.target</code></strong> is more reliable than @reboot: it integrates with logging, dependencies (<code>After=network-online.target</code>), and restart policies. Use @reboot for quick personal scripts; use systemd units for anything production-adjacent.</p>
+<div class="note">For recurring (non-boot) schedules, build and verify them in the <a href="../index.html">Cron Builder</a>.</div>
+
+<footer>Cron Builder · free, client-side, no signup · <a href="../index.html">Build your own schedule →</a></footer>
+</body>
+</html>

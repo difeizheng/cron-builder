@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>./</loc><lastmod>2026-10-29</lastmod><priority>1.0</priority></url>
-  <url><loc>content/cron-every-5-minutes.html</loc><lastmod>2026-10-29</lastmod><priority>0.8</priority></url>
-  <url><loc>content/cron-every-hour.html</loc><lastmod>2026-10-29</lastmod><priority>0.8</priority></url>
-  <url><loc>content/cron-daily-at-specific-time.html</loc><lastmod>2026-10-29</lastmod><priority>0.8</priority></url>
-  <url><loc>content/cron-weekdays-only.html</loc><lastmod>2026-10-29</lastmod><priority>0.8</priority></url>
-  <url><loc>content/cron-every-monday.html</loc><lastmod>2026-10-29</lastmod><priority>0.8</priority></url>
+  <url><loc>./</loc><lastmod>2026-10-30</lastmod><priority>1.0</priority></url>
+  <url><loc>content/cron-every-5-minutes.html</loc><lastmod>2026-10-30</lastmod><priority>0.8</priority></url>
+  <url><loc>content/cron-every-hour.html</loc><lastmod>2026-10-30</lastmod><priority>0.8</priority></url>
+  <url><loc>content/cron-daily-at-specific-time.html</loc><lastmod>2026-10-30</lastmod><priority>0.8</priority></url>
+  <url><loc>content/cron-weekdays-only.html</loc><lastmod>2026-10-30</lastmod><priority>0.8</priority></url>
+  <url><loc>content/cron-every-monday.html</loc><lastmod>2026-10-30</lastmod><priority>0.8</priority></url>
+  <url><loc>content/cron-every-30-minutes.html</loc><lastmod>2026-10-30</lastmod><priority>0.8</priority></url>
+  <url><loc>content/cron-reboot.html</loc><lastmod>2026-10-30</lastmod><priority>0.8</priority></url>
+  <url><loc>content/cron-first-day-of-month.html</loc><lastmod>2026-10-30</lastmod><priority>0.8</priority></url>
 </urlset>
