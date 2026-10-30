@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cron Between Certain Hours — Hour Range Windows (8-18, 9-17)</title>
+<meta name="description" content="Run cron jobs only during business hours: */15 8-18 * * * and variants. Hour-range windows, boundary precision, and overnight exclusion.">
+<link rel="canonical" href="./cron-between-hours.html">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How do I run a cron job only during business hours?", "acceptedAnswer": {"@type": "Answer", "text": "Restrict the hour field with a range: */15 9-17 * * 1-5 fires every 15 minutes between 09:00 and 17:59 on weekdays. Hour ranges are inclusive on both ends."}}, {"@type": "Question", "name": "Can cron exclude a lunch break from a schedule?", "acceptedAnswer": {"@type": "Answer", "text": "Not with a single line — cron cannot subtract ranges. Use two crontab lines with complementary hour ranges (e.g. 9-11 and 14-18)."}}]}</script>
+<style>:root{--bg:#0d1117;--panel:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--accent:#3fb950;--accent2:#58a6ff;--danger:#f85149}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans",sans-serif;line-height:1.7;padding:24px;max-width:820px;margin:0 auto}
+h1{font-size:1.6rem;margin-bottom:6px}h2{font-size:1.15rem;margin:26px 0 8px}
+.sub{color:var(--muted);margin-bottom:22px}
+.expr{background:#161b22;border:1px solid var(--border);border-radius:10px;padding:16px 20px;font-family:ui-monospace,Consolas,monospace;font-size:1.5rem;color:var(--accent);letter-spacing:.06em;margin:14px 0}
+table{width:100%;border-collapse:collapse;font-size:.93rem;margin:12px 0}
+th,td{padding:8px 10px;border:1px solid var(--border);text-align:left}
+th{background:#161b22;color:var(--muted);font-weight:500}
+td code{background:#0d1117}
+code{background:#21262d;border-radius:4px;padding:2px 7px;font-family:ui-monospace,Consolas,monospace;font-size:.9em}
+p{margin:12px 0;color:var(--muted)}
+.note{background:#161b22;border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:10px 14px;margin:14px 0}
+.warn{border-color:var(--danger)}
+a{color:var(--accent2);text-decoration:none}
+.btn{display:inline-block;background:var(--accent);color:#0d1117;border-radius:8px;padding:10px 22px;font-weight:600;margin:10px 0}
+footer{color:var(--muted);font-size:.85rem;margin-top:30px;border-top:1px solid var(--border);padding-top:16px}</style>
+</head>
+<body>
+<p style="margin-bottom:14px"><a href="../index.html">← Cron Builder &amp; Explainer</a></p>
+<h1>Cron: Run a Job Only Between Certain Hours</h1>
+<p class="sub">Run cron jobs only during business hours: */15 8-18 * * * and variants. Hour-range windows, boundary precision, and overnight exclusion.</p>
+<div class="expr">*/15 8-18 * * *</div><p>Hour field <code>8-18</code> restricts to the 08:00–18:59 window (includes 18:xx runs — use <code>8-17</code> to stop at 17:59).</p><h2>Business-hours windows</h2><table><tr><th>Goal</th><th>Expression</th><th>Runs</th></tr><tr><td>Every 30 min, 09:00–18:59</td><td><code>*/30 9-18 * * *</code></td><td>20 runs/day</td></tr><tr><td>Weekdays 09:00–17:59 only</td><td><code>*/30 9-17 * * 1-5</code></td><td>Combined window + weekday</td></tr><tr><td>Excluding lunch</td><td>two lines: <code>*/30 9-11</code> + <code>*/30 14-18</code></td><td>Cron cannot subtract ranges</td></tr><tr><td>Nightly maintenance 01:00–04:59</td><td><code>*/30 1-4 * * *</code></td><td>Off-peak window</td></tr></table><h2>Boundary precision</h2><p>The hour range is <strong>inclusive on both ends</strong>: <code>9-18</code> includes the 18:00–18:59 slot. If "until 18:00" means the 18:00 run should NOT fire, write <code>9-17</code>. Off-by-one at the boundary is the most common mistake in window schedules.</p><div class="note">Preview exact fire times with the <a href="../index.html">Cron Builder</a> — the next-run list makes boundary behavior obvious.</div>
+<footer>Cron Builder · free, client-side, no signup · <a href="../index.html">Build your own schedule →</a></footer>
+</body>
+</html>
