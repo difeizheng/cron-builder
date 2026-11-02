@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cron Special Strings — @reboot, @daily, @weekly, @monthly, @yearly</title>
+<meta name="description" content="Cron special strings: @reboot, @yearly, @monthly, @weekly, @daily, @midnight, @hourly — equivalents, gotchas and when to use each.">
+<link rel="canonical" href="./cron-special-strings.html">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What are cron special strings?", "acceptedAnswer": {"@type": "Answer", "text": "@reboot, @yearly, @annually, @monthly, @weekly, @daily, @midnight, @hourly — shorthands that replace the five time fields."}}, {"@type": "Question", "name": "What is the difference between @daily and @midnight?", "acceptedAnswer": {"@type": "Answer", "text": "None — both are equivalent to 0 0 * * *. They are aliases."}}]}</script>
+<style>:root{--bg:#0d1117;--panel:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--accent:#3fb950;--accent2:#58a6ff;--danger:#f85149}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans",sans-serif;line-height:1.7;padding:24px;max-width:820px;margin:0 auto}
+h1{font-size:1.6rem;margin-bottom:6px}h2{font-size:1.15rem;margin:26px 0 8px}
+.sub{color:var(--muted);margin-bottom:22px}
+.expr{background:#161b22;border:1px solid var(--border);border-radius:10px;padding:16px 20px;font-family:ui-monospace,Consolas,monospace;font-size:1.5rem;color:var(--accent);letter-spacing:.06em;margin:14px 0}
+table{width:100%;border-collapse:collapse;font-size:.93rem;margin:12px 0}
+th,td{padding:8px 10px;border:1px solid var(--border);text-align:left}
+th{background:#161b22;color:var(--muted);font-weight:500}
+td code{background:#0d1117}
+code{background:#21262d;border-radius:4px;padding:2px 7px;font-family:ui-monospace,Consolas,monospace;font-size:.9em}
+p{margin:12px 0;color:var(--muted)}
+.note{background:#161b22;border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:10px 14px;margin:14px 0}
+.warn{border-color:var(--danger)}
+a{color:var(--accent2);text-decoration:none}
+.btn{display:inline-block;background:var(--accent);color:#0d1117;border-radius:8px;padding:10px 22px;font-weight:600;margin:10px 0}
+footer{color:var(--muted);font-size:.85rem;margin-top:30px;border-top:1px solid var(--border);padding-top:16px}</style>
+</head>
+<body>
+<p style="margin-bottom:14px"><a href="../index.html">← Cron Builder &amp; Explainer</a></p>
+<h1>Cron 特殊字符串：@reboot 到 @hourly</h1>
+<p class="sub">Cron special strings: @reboot, @yearly, @monthly, @weekly, @daily, @midnight, @hourly — equivalents, gotchas and when to use each.</p>
+<p>cron 支持 7 个特殊字符串替代五字段：</p><table><tr><th>字符串</th><th>等价于</th><th>说明</th></tr><tr><td><code>@reboot</code></td><td>开机时运行一次</td><td>cron 守护进程启动时触发，非系统开机（细节差异见 <a href="cron-reboot.html">@reboot 陷阱</a>）</td></tr><tr><td><code>@yearly</code> / <code>@annually</code></td><td><code>0 0 1 1 *</code></td><td>每年 1 月 1 日零点</td></tr><tr><td><code>@monthly</code></td><td><code>0 0 1 * *</code></td><td>每月 1 日零点</td></tr><tr><td><code>@weekly</code></td><td><code>0 0 * * 0</code></td><td>每周日零点</td></tr><tr><td><code>@daily</code> / <code>@midnight</code></td><td><code>0 0 * * *</code></td><td>每天零点</td></tr><tr><td><code>@hourly</code></td><td><code>0 * * * *</code></td><td>每小时整点</td></tr></table><h2>三个使用注意</h2><p><strong>1. 不可指定分钟偏移。</strong> 要 <code>:07</code> 运行就别用 <code>@daily</code>——写全五字段 <code>7 0 * * *</code>。</p><p><strong>2. 全部零点撞车。</strong> @daily/@weekly/@monthly 都在零点触发，共享服务器上会堆积——用完整五字段错开分钟。</p><p><strong>3. 时区同五字段规则。</strong> 特殊串同样受服务器时区影响。</p><div class="note">不确定用哪个？<a href="../index.html">Cron Builder</a> 生成五字段版本，可读性更好且方便日后迁移 systemd。</div>
+<footer>Cron Builder · free, client-side, no signup · <a href="../index.html">Build your own schedule →</a></footer>
+</body>
+</html>

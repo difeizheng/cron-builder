@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>systemd Timer vs Cron — Which Scheduler Should You Use in 2026</title>
+<meta name="description" content="systemd timer vs cron: OnCalendar syntax, Persistent=true catch-up, dependencies, logging — when to migrate from crontab and when cron is still fine.">
+<link rel="canonical" href="./cron-systemd-timer.html">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Should I use systemd timer instead of cron?", "acceptedAnswer": {"@type": "Answer", "text": "If you need missed-job catch-up, dependency ordering, or unified logging, migrate to systemd timers. For simple periodic scripts on a personal server, cron remains the lowest-cost option."}}, {"@type": "Question", "name": "Is systemd timer syntax compatible with cron?", "acceptedAnswer": {"@type": "Answer", "text": "OnCalendar= uses a similar 5-field format and is largely compatible, plus supports more complex expressions like ranges with seconds."}}]}</script>
+<style>:root{--bg:#0d1117;--panel:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--accent:#3fb950;--accent2:#58a6ff;--danger:#f85149}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans",sans-serif;line-height:1.7;padding:24px;max-width:820px;margin:0 auto}
+h1{font-size:1.6rem;margin-bottom:6px}h2{font-size:1.15rem;margin:26px 0 8px}
+.sub{color:var(--muted);margin-bottom:22px}
+.expr{background:#161b22;border:1px solid var(--border);border-radius:10px;padding:16px 20px;font-family:ui-monospace,Consolas,monospace;font-size:1.5rem;color:var(--accent);letter-spacing:.06em;margin:14px 0}
+table{width:100%;border-collapse:collapse;font-size:.93rem;margin:12px 0}
+th,td{padding:8px 10px;border:1px solid var(--border);text-align:left}
+th{background:#161b22;color:var(--muted);font-weight:500}
+td code{background:#0d1117}
+code{background:#21262d;border-radius:4px;padding:2px 7px;font-family:ui-monospace,Consolas,monospace;font-size:.9em}
+p{margin:12px 0;color:var(--muted)}
+.note{background:#161b22;border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:10px 14px;margin:14px 0}
+.warn{border-color:var(--danger)}
+a{color:var(--accent2);text-decoration:none}
+.btn{display:inline-block;background:var(--accent);color:#0d1117;border-radius:8px;padding:10px 22px;font-weight:600;margin:10px 0}
+footer{color:var(--muted);font-size:.85rem;margin-top:30px;border-top:1px solid var(--border);padding-top:16px}</style>
+</head>
+<body>
+<p style="margin-bottom:14px"><a href="../index.html">← Cron Builder &amp; Explainer</a></p>
+<h1>systemd Timer vs Cron: 完整对比</h1>
+<p class="sub">systemd timer vs cron: OnCalendar syntax, Persistent=true catch-up, dependencies, logging — when to migrate from crontab and when cron is still fine.</p>
+<p>两者的核心区别一句话：<strong>cron 只管"到点执行"，systemd timer 管理的是"任务的生命周期"。</strong></p><h2>对照表</h2><table><tr><th>能力</th><th>cron</th><th>systemd timer</th></tr><tr><td>错过的任务补跑</td><td>不补（Persistent 需 timer 支持）</td><td><code>Persistent=true</code> 开机补跑</td></tr><tr><td>依赖管理</td><td>无</td><td><code>After=network-online.target</code></td></tr><tr><td>日志</td><td>邮件 / 自行重定向</td><td>journalctl 统一查询</td></tr><tr><td>资源限制</td><td>无</td><td>MemoryMax / CPUQuota</td></tr><tr><td>语法</td><td>5 字段</td><td>OnCalendar=同 5 字段 + 更灵活</td></tr></table><h2>迁移示例：每 15 分钟</h2><p>cron：<code>*/15 * * * * /path/job.sh</code></p><p>systemd：<code>myjob.timer</code> 里 <code>OnCalendar=*:0/15</code>，<code>myjob.service</code> 里放执行命令。启用：<code>systemctl enable --now myjob.timer</code></p><h2>什么时候 cron 仍然够用</h2><p>个人 VPS 上简单的周期脚本、无需补跑、无依赖链 —— cron 依然是最低成本方案。<strong>需要补跑、依赖、统一日志之一时，迁 systemd。</strong></p><div class="note">生成 cron 表达式用 <a href="../index.html">Cron Builder</a>；迁移 systemd 的 OnCalendar 语法与 cron 5 字段基本兼容。</div>
+<footer>Cron Builder · free, client-side, no signup · <a href="../index.html">Build your own schedule →</a></footer>
+</body>
+</html>
