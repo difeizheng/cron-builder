@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Adding Random Delay (Jitter) to Cron Jobs — 3 Practical Patterns</title>
+<meta name="description" content="Why thousands of cron jobs firing at midnight is a problem, and three jitter patterns: RANDOM_DELAY, sleep with $RANDOM, and systemd timer AccuracySec/RandomizedDelaySec.">
+<link rel="canonical" href="./cron-random-jitter.html">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Why add random delay to cron jobs?", "acceptedAnswer": {"@type": "Answer", "text": "To avoid thundering-herd spikes: hundreds of jobs firing at exactly midnight saturate CPU, database connections and downstream APIs at the same moment. Jitter spreads the load over a window."}}, {"@type": "Question", "name": "Why must % be escaped in crontab?", "acceptedAnswer": {"@type": "Answer", "text": "In crontab, a bare % starts a new stdin block — the first % ends the command line. Escape it as \\% when using it in arithmetic or formatting inside a cron command."}}]}</script>
+<style>:root{--bg:#0d1117;--panel:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--accent:#3fb950;--accent2:#58a6ff;--danger:#f85149}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans",sans-serif;line-height:1.7;padding:24px;max-width:820px;margin:0 auto}
+h1{font-size:1.6rem;margin-bottom:6px}h2{font-size:1.15rem;margin:26px 0 8px}
+.sub{color:var(--muted);margin-bottom:22px}
+.expr{background:#161b22;border:1px solid var(--border);border-radius:10px;padding:16px 20px;font-family:ui-monospace,Consolas,monospace;font-size:1.5rem;color:var(--accent);letter-spacing:.06em;margin:14px 0}
+table{width:100%;border-collapse:collapse;font-size:.93rem;margin:12px 0}
+th,td{padding:8px 10px;border:1px solid var(--border);text-align:left}
+th{background:#161b22;color:var(--muted);font-weight:500}
+td code{background:#0d1117}
+code{background:#21262d;border-radius:4px;padding:2px 7px;font-family:ui-monospace,Consolas,monospace;font-size:.9em}
+p{margin:12px 0;color:var(--muted)}
+.note{background:#161b22;border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:10px 14px;margin:14px 0}
+.warn{border-color:var(--danger)}
+a{color:var(--accent2);text-decoration:none}
+.btn{display:inline-block;background:var(--accent);color:#0d1117;border-radius:8px;padding:10px 22px;font-weight:600;margin:10px 0}
+footer{color:var(--muted);font-size:.85rem;margin-top:30px;border-top:1px solid var(--border);padding-top:16px}</style>
+</head>
+<body>
+<p style="margin-bottom:14px"><a href="../index.html">← Cron Builder &amp; Explainer</a></p>
+<h1>Cron 任务加随机抖动（Jitter）：三种实用模式</h1>
+<p class="sub">Why thousands of cron jobs firing at midnight is a problem, and three jitter patterns: RANDOM_DELAY, sleep with $RANDOM, and systemd timer AccuracySec/RandomizedDelaySec.</p>
+<p>所有任务挤在同一分钟触发（典型如零点）会造成资源尖峰：CPU、数据库连接、下游 API 全部同时被压。解决方法就是加<strong>随机延迟（jitter）</strong>。</p><h2>模式一：sleep + $RANDOM（最通用）</h2><pre>7 0 * * * sleep $((RANDOM \% 3600)); /opt/job/run.sh</pre><p>在零点 07 分基础上再随机延迟 0–3600 秒，任务实际在一小时内随机分布。注意 crontab 里 <code>%</code> 必须转义为 <code>\%</code>。</p><h2>模式二：systemd timer 原生支持</h2><pre>[Timer]
+OnCalendar=*-*-* 00:07:00
+RandomizedDelaySec=3600
+AccuracySec=1s</pre><p><code>RandomizedDelaySec</code> 是原生字段，比 sleep 更干净，还支持 <code>Persistent=true</code> 补跑。<a href="cron-systemd-timer.html">systemd timer 完整对比</a>见另一篇。</p><h2>模式三：固定错峰（可预测场景）</h2><p>如果下游希望错峰但<strong>可预期</strong>（如按机器编号分流），用确定性偏移代替随机：</p><pre># 机器 A/B/C 分别在 0/20/40 分触发
+M=$(($(hostname | md5sum | head -c1 | od -An -tx1 | xxd -r -p) \% 3 * 20)); /opt/job/run.sh</pre><h2>什么时候不需要 jitter</h2><p>任务本身轻量（秒级完成）、无共享下游依赖时，抖动是过度设计。**先看尖峰是否真实存在，再加复杂度。**</p><div class="note">生成基础时间字段用 <a href="../index.html">Cron Builder</a>，五字段确定后再叠加抖动层。</div>
+<footer>Cron Builder · free, client-side, no signup · <a href="../index.html">Build your own schedule →</a></footer>
+</body>
+</html>

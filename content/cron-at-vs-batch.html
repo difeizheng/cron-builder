@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>at vs batch vs cron — One-shot vs Recurring Jobs on Linux</title>
+<meta name="description" content="at vs batch vs cron: when to use one-shot scheduling (at), load-triggered execution (batch), and recurring schedules (cron). Syntax, examples and decision table.">
+<link rel="canonical" href="./cron-at-vs-batch.html">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What is the difference between at and cron?", "acceptedAnswer": {"@type": "Answer", "text": "at runs a job once at a specified time; cron runs jobs on a recurring schedule. Use at for one-shot tasks like tonight's migration, cron for daily/weekly recurrence."}}, {"@type": "Question", "name": "What does the batch command do?", "acceptedAnswer": {"@type": "Answer", "text": "batch is like at but executes only when system load average drops below the atd threshold (default 1.5) — ideal for heavy offline jobs that should not compete with production traffic."}}]}</script>
+<style>:root{--bg:#0d1117;--panel:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--accent:#3fb950;--accent2:#58a6ff;--danger:#f85149}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans",sans-serif;line-height:1.7;padding:24px;max-width:820px;margin:0 auto}
+h1{font-size:1.6rem;margin-bottom:6px}h2{font-size:1.15rem;margin:26px 0 8px}
+.sub{color:var(--muted);margin-bottom:22px}
+.expr{background:#161b22;border:1px solid var(--border);border-radius:10px;padding:16px 20px;font-family:ui-monospace,Consolas,monospace;font-size:1.5rem;color:var(--accent);letter-spacing:.06em;margin:14px 0}
+table{width:100%;border-collapse:collapse;font-size:.93rem;margin:12px 0}
+th,td{padding:8px 10px;border:1px solid var(--border);text-align:left}
+th{background:#161b22;color:var(--muted);font-weight:500}
+td code{background:#0d1117}
+code{background:#21262d;border-radius:4px;padding:2px 7px;font-family:ui-monospace,Consolas,monospace;font-size:.9em}
+p{margin:12px 0;color:var(--muted)}
+.note{background:#161b22;border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:10px 14px;margin:14px 0}
+.warn{border-color:var(--danger)}
+a{color:var(--accent2);text-decoration:none}
+.btn{display:inline-block;background:var(--accent);color:#0d1117;border-radius:8px;padding:10px 22px;font-weight:600;margin:10px 0}
+footer{color:var(--muted);font-size:.85rem;margin-top:30px;border-top:1px solid var(--border);padding-top:16px}</style>
+</head>
+<body>
+<p style="margin-bottom:14px"><a href="../index.html">← Cron Builder &amp; Explainer</a></p>
+<h1>at / batch / cron：一次性任务与周期任务怎么选</h1>
+<p class="sub">at vs batch vs cron: when to use one-shot scheduling (at), load-triggered execution (batch), and recurring schedules (cron). Syntax, examples and decision table.</p>
+<p>一句话分工：<strong>cron 管周期，at 管一次性定时，batch 管空闲时执行。</strong>三者常被混用，其实决策很简单。</p><h2>决策表</h2><table><tr><th>场景</th><th>用哪个</th></tr><tr><td>每天/每周固定时间跑</td><td>cron</td></tr><tr><td>今晚 23:00 跑一次（如夜间数据迁移）</td><td>at</td></tr><tr><td>系统空闲时才跑（如重编译、批量压缩）</td><td>batch</td></tr><tr><td>重启后跑一次</td><td>systemd unit 或 <a href="cron-reboot.html">@reboot</a></td></tr></table><h2>at 快速上手</h2><pre>echo '/opt/job/migrate.sh' | at 23:00
+atq            # 查看队列
+atrm 3         # 删除任务号 3
+at -c 3        # 查看任务 3 的完整内容</pre><p>时间格式很灵活：<code>at now + 2 hours</code>、<code>at 3am tomorrow</code>、<code>at 2026-12-01 04:00</code>。</p><h2>batch 与负载阈值</h2><p><code>batch</code> 等价于 <code>at</code> 但只在系统负载低于 <code>atd</code> 阈值（默认 1.5）时才执行——把大计算任务扔给 batch，白天不会拖垮线上服务。</p><h2>at 任务的注意事项</h2><p><strong>1. 环境同 cron 的坑</strong>：at 执行时同样不继承你的完整 shell 环境，<a href="cron-env-variables.html">PATH 问题一样存在</a>。</p><p><strong>2. 一次性≠不丢</strong>：atd 服务没起来任务就不会跑，<code>systemctl status atd</code> 先确认。</p><div class="note">周期任务的时间字段拿不准？用 <a href="../index.html">Cron Builder</a> 生成并预览未来 5 次触发时间。</div>
+<footer>Cron Builder · free, client-side, no signup · <a href="../index.html">Build your own schedule →</a></footer>
+</body>
+</html>
