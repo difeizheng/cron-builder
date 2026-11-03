@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How to Check if a Cron Job Ran — Logs, journalctl and Audit Tricks</title>
+<meta name="description" content="How to verify a cron job actually ran: grep /var/log/cron and syslog, journalctl -u cron, job-level logs with timestamps, and exit-code capture.">
+<link rel="canonical" href="./cron-check-if-ran.html">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Where are cron job execution logs?", "acceptedAnswer": {"@type": "Answer", "text": "Scheduler-level: /var/log/syslog (grep CRON) on Debian/Ubuntu, /var/log/cron on RHEL, or journalctl -u cron under systemd. Job-level output only exists if you redirect it to a file."}}, {"@type": "Question", "name": "How can I automatically alert when a cron job doesn't run?", "acceptedAnswer": {"@type": "Answer", "text": "Have the job touch a heartbeat file (touch /var/run/job.last) and monitor its mtime — alert when it's older than two schedule periods."}}]}</script>
+<style>:root{--bg:#0d1117;--panel:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--accent:#3fb950;--accent2:#58a6ff;--danger:#f85149}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans",sans-serif;line-height:1.7;padding:24px;max-width:820px;margin:0 auto}
+h1{font-size:1.6rem;margin-bottom:6px}h2{font-size:1.15rem;margin:26px 0 8px}
+.sub{color:var(--muted);margin-bottom:22px}
+.expr{background:#161b22;border:1px solid var(--border);border-radius:10px;padding:16px 20px;font-family:ui-monospace,Consolas,monospace;font-size:1.5rem;color:var(--accent);letter-spacing:.06em;margin:14px 0}
+table{width:100%;border-collapse:collapse;font-size:.93rem;margin:12px 0}
+th,td{padding:8px 10px;border:1px solid var(--border);text-align:left}
+th{background:#161b22;color:var(--muted);font-weight:500}
+td code{background:#0d1117}
+code{background:#21262d;border-radius:4px;padding:2px 7px;font-family:ui-monospace,Consolas,monospace;font-size:.9em}
+p{margin:12px 0;color:var(--muted)}
+.note{background:#161b22;border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:10px 14px;margin:14px 0}
+.warn{border-color:var(--danger)}
+a{color:var(--accent2);text-decoration:none}
+.btn{display:inline-block;background:var(--accent);color:#0d1117;border-radius:8px;padding:10px 22px;font-weight:600;margin:10px 0}
+footer{color:var(--muted);font-size:.85rem;margin-top:30px;border-top:1px solid var(--border);padding-top:16px}</style>
+</head>
+<body>
+<p style="margin-bottom:14px"><a href="../index.html">← Cron Builder &amp; Explainer</a></p>
+<h1>怎么确认 cron 任务真的跑过：四层核验法</h1>
+<p class="sub">How to verify a cron job actually ran: grep /var/log/cron and syslog, journalctl -u cron, job-level logs with timestamps, and exit-code capture.</p>
+<p>「任务到底跑没跑」要用证据回答，不是靠感觉。四层核验从粗到细。</p><h2>第一层：系统调度日志（cron 眼里的记录）</h2><table><tr><th>系统</th><th>命令</th></tr><tr><td>Ubuntu/Debian</td><td><code>grep CRON /var/log/syslog</code>（或 <code>journalctl -u cron</code>）</td></tr><tr><td>RHEL/CentOS</td><td><code>grep cron /var/log/cron</code></td></tr><tr><td>任何 systemd</td><td><code>journalctl -u cron --since "1 hour ago"</code></td></tr></table><p>这层只回答「cron <strong>启动过</strong>命令吗」——不代表任务成功。</p><h2>第二层：任务自己的日志（成败的证据）</h2><pre>7 2 * * * /opt/job/run.sh &gt;&gt; /var/log/myjob/run.log 2&gt;&amp;1</pre><p>任务内关键节点打时间戳：<code>echo "[$(date '+%F %T')] stage1 done"</code>。查日志 <code>tail -100 /var/log/myjob/run.log</code>。</p><h2>第三层：退出码留痕（自动化核验）</h2><pre>7 2 * * * /opt/job/run.sh; echo "$(date +\%F_\%T) exit=$?" &gt;&gt; /var/log/myjob/exit.log</pre><p>注意 crontab 里 <code>%</code> 要转义。<code>exit=0</code> 才是成功，一行一条可 grep 可统计。</p><h2>第四层：心跳文件（给监控用）</h2><p>任务末尾 <code>touch /var/run/myjob.last</code>，监控侧定期检查文件 mtime——超过 2 个周期没更新就告警。这是所有成熟调度系统（含 Airflow）的"心跳"思想。</p><div class="note">如果第一层就查不到启动记录，那是调度没发生，去查 <a href="crontab-not-running.html">crontab 不运行排查清单</a>；输出被吞的问题看 <a href="cron-mailto-suppress.html">MAILTO 控制</a>。</div>
+<footer>Cron Builder · free, client-side, no signup · <a href="../index.html">Build your own schedule →</a></footer>
+</body>
+</html>
