@@ -21,6 +21,8 @@
   <url><loc>content/cron-every-monday.html</loc><lastmod>2026-11-04</lastmod><priority>0.8</priority></url>
   <url><loc>content/cron-first-day-of-month.html</loc><lastmod>2026-11-04</lastmod><priority>0.8</priority></url>
   <url><loc>content/cron-log-rotation.html</loc><lastmod>2026-11-04</lastmod><priority>0.8</priority></url>
+  <url><loc>content/cron-mailto-suppress.html</loc><lastmod>2026-11-04</lastmod><priority>0.8</priority></url>
+  <url><loc>content/cron-overlapping-runs.html</loc><lastmod>2026-11-04</lastmod><priority>0.8</priority></url>
   <url><loc>content/cron-percent-escaping.html</loc><lastmod>2026-11-04</lastmod><priority>0.8</priority></url>
   <url><loc>content/cron-random-jitter.html</loc><lastmod>2026-11-04</lastmod><priority>0.8</priority></url>
   <url><loc>content/cron-reboot.html</loc><lastmod>2026-11-04</lastmod><priority>0.8</priority></url>
